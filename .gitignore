@@ -2,13 +2,20 @@
 __pycache__/
 *.py[cod]
 *$py.class
-backend/saved_models/*.keras
-backend/saved_models/*.pkl
-backend/saved_models/*.json
+# Allow model files for deployment
+!backend/saved_models/*.keras
+!backend/saved_models/*.pkl
+!backend/saved_models/*.json
 .env
 .venv/
 venv/
 ENV/
+
+# Required deployment artefacts
+!Metro_Interstate_Traffic_Volume.csv
+!backend/saved_models/*.keras
+!backend/saved_models/*.pkl
+!backend/saved_models/*.json
 
 # Node / Frontend
 frontend/node_modules/

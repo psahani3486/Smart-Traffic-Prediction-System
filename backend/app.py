@@ -13,6 +13,8 @@ from pydantic import BaseModel
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 
+from data_pipeline import run_pipeline
+
 SAVE_DIR = os.path.join(os.path.dirname(__file__), 'saved_models')
 
 app = FastAPI(title="Smart Traffic Prediction API", version="1.0.0")
@@ -34,6 +36,13 @@ def load_resources():
         with open(art_path, 'rb') as f:
             artefacts = pickle.load(f)
         print("[API] Pipeline artefacts loaded")
+    else:
+        csv_path = os.path.join(os.path.dirname(__file__), '..', 'Metro_Interstate_Traffic_Volume.csv')
+        if os.path.exists(csv_path):
+            print("[API] Pipeline artefacts missing; rebuilding from dataset")
+            artefacts = run_pipeline(csv_path, save=True)
+        else:
+            print("[API] Pipeline artefacts missing and dataset not found")
 
     # Training report
     rep_path = os.path.join(SAVE_DIR, 'training_report.json')
