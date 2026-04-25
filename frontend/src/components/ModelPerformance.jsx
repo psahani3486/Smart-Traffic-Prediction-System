@@ -27,6 +27,40 @@ export default function ModelPerformance({ modelInfo, predictions }) {
 
   const { best_model, models, histories } = modelInfo;
 
+  const modelRows = models
+    ? Object.entries(models)
+        .sort((a, b) => (b?.[1]?.r2 ?? -Infinity) - (a?.[1]?.r2 ?? -Infinity))
+    : [];
+
+  const modelNames = modelRows.map(([name]) => name);
+  const metricName = (name) => name?.replace(/_/g, ' ');
+
+  const palette = [
+    'var(--accent-cyan)',
+    'var(--accent-amber)',
+    'var(--accent-pink)',
+    'var(--accent-purple)',
+    'var(--accent-green)',
+    'var(--accent-blue)',
+    'var(--accent-red)',
+  ];
+
+  const makeKey = (name) => `val_${String(name).replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+  const maxEpochs = Math.max(
+    0,
+    ...modelNames.map((name) => histories?.[name]?.val_loss?.length || 0)
+  );
+
+  const valLossAllModels = Array.from({ length: maxEpochs }, (_, i) => {
+    const row = { epoch: i + 1 };
+    modelNames.forEach((name) => {
+      const v = histories?.[name]?.val_loss?.[i];
+      row[makeKey(name)] = typeof v === 'number' ? v : null;
+    });
+    return row;
+  });
+
   // Predictions chart (last 200 points for readability)
   const predData = predictions?.y_true ? predictions.y_true.slice(-200).map((v, i) => ({
     idx: i,
@@ -69,10 +103,10 @@ export default function ModelPerformance({ modelInfo, predictions }) {
               </tr>
             </thead>
             <tbody>
-              {models && Object.entries(models).map(([name, m]) => (
+              {modelRows.map(([name, m]) => (
                 <tr key={name}>
                   <td style={{ fontWeight: 600 }}>
-                    {name.replace(/_/g, ' ')}
+                    {metricName(name)}
                     {name === best_model && <span className="best-badge">BEST</span>}
                   </td>
                   <td>{m.rmse?.toLocaleString()}</td>
@@ -144,6 +178,42 @@ export default function ModelPerformance({ modelInfo, predictions }) {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* All models validation loss */}
+      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>
+          Validation Loss (All Models)
+        </h3>
+        <div className="chart-container-sm">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={valLossAllModels}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis
+                dataKey="epoch"
+                stroke="#5a5f73"
+                fontSize={11}
+                tickLine={false}
+                label={{ value: 'Epoch', position: 'insideBottom', offset: -5, fill: '#5a5f73', fontSize: 10 }}
+              />
+              <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend wrapperStyle={{ fontSize: '0.8rem' }} />
+              {modelNames.map((name, idx) => (
+                <Line
+                  key={name}
+                  type="monotone"
+                  dataKey={makeKey(name)}
+                  name={metricName(name)}
+                  stroke={palette[idx % palette.length]}
+                  strokeWidth={name === best_model ? 2.5 : 1.5}
+                  opacity={name === best_model ? 1 : 0.75}
+                  dot={false}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
