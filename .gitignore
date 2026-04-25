@@ -1,0 +1,30 @@
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+backend/saved_models/*.keras
+backend/saved_models/*.pkl
+backend/saved_models/*.json
+.env
+.venv/
+venv/
+ENV/
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# Data
+*.csv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
