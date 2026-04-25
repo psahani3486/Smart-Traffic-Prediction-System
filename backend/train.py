@@ -12,7 +12,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 from data_pipeline import run_pipeline, SAVE_DIR
 from models import MODEL_BUILDERS

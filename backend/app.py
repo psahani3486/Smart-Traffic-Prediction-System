@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-import tensorflow as tf
+from keras.models import load_model
 
 from data_pipeline import run_pipeline
 
@@ -53,7 +53,7 @@ def load_resources():
         best = training_report.get('best_model', 'Stacked_LSTM')
         model_path = os.path.join(SAVE_DIR, f'{best}.keras')
         if os.path.exists(model_path):
-            model = tf.keras.models.load_model(model_path)
+            model = load_model(model_path)
             print(f"[API] Best model loaded: {best}")
 
     # Analysis results

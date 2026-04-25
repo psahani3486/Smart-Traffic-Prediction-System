@@ -10,7 +10,7 @@ export default function Navbar() {
       </div>
       <div className="navbar-status">
         <div className="status-dot"></div>
-        LSTM Model Active
+        System Active
       </div>
     </nav>
   );

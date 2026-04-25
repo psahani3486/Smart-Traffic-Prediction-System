@@ -18,7 +18,7 @@ export default function Hero({ stats }) {
         Smart <span>Traffic Prediction</span> System
       </h1>
       <p className="hero-description">
-        AI-powered traffic forecasting using LSTM deep learning on Metro Interstate data.
+        AI-powered traffic forecasting using Deep Learning Ensembles on Metro Interstate data.
         Predicting congestion with real-time analytics, weather integration, and route recommendations.
       </p>
       <div className="stats-grid">

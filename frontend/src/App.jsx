@@ -61,7 +61,7 @@ export default function App() {
           borderTop: '1px solid var(--border-glass)',
           color: 'var(--text-muted)', fontSize: '0.8rem'
         }}>
-          <p>Smart Traffic Prediction System &bull; LSTM Deep Learning &bull; Built with TensorFlow, FastAPI & React</p>
+          <p>Smart Traffic Prediction System &bull; Deep Learning Ensembles &bull; Built with TensorFlow, FastAPI & React</p>
         </footer>
       </main>
     </>
