@@ -6,7 +6,7 @@ A production-grade, end-to-end traffic forecasting system using **LSTM Deep Lear
 
 - **Deep Learning Model:** LSTM-based time-series forecasting with an R² score of **0.9341**.
 - **Real-time Predictions:** Interactive panel to predict traffic volume based on time, weather, and temperature.
-- **Advanced Analytics:** 
+- **Advanced Analytics:**
   - 24-hour traffic patterns.
   - Weekly congestion heatmaps.
   - Weather & Holiday impact analysis.
@@ -24,36 +24,56 @@ A production-grade, end-to-end traffic forecasting system using **LSTM Deep Lear
 ## 📦 Installation & Setup
 
 ### 1. Prerequisites
+
 - Python 3.9+
 - Node.js 18+
 
 ### 2. Backend Setup
+
 ```bash
 cd backend
 pip install -r requirements.txt
 python app.py
 ```
 
+_The API will be available at `http://localhost:8000` and serves the predict endpoints._
+
 ### 3. Frontend Setup
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
+### 4. Training & Data Pipeline (Optional)
+
+If you wish to re-train the models from scratch and regenerate the data analytics output, run:
+
+```bash
+cd backend
+# 1. Train all deep learning models
+python train.py
+
+# 2. Generate analysis results for the frontend
+python generate_analysis.py
+```
+
 ## 🧠 Model Comparison
+
 We compared multiple architectures to find the best fit:
+
 - **LSTM (Winner):** Best balance of temporal capture and complexity.
 - **Stacked LSTM:** Deeper architecture for complex patterns.
 - **Bi-LSTM:** Bidirectional learning for context.
 - **GRU:** Efficient gated unit alternative.
 
 ## 📊 Dataset
+
 The system uses the **Metro Interstate Traffic Volume Dataset**, which includes:
+
 - Hourly traffic volume
 - Weather conditions (Rain, Snow, Clouds, etc.)
 - Temperature
 - Holiday markers
 
----
-Built with ❤️ for professional-grade portfolio demonstration.
