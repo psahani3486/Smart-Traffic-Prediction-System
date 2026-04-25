@@ -129,17 +129,14 @@ def run_pipeline(path: str = DATA_PATH, save: bool = True):
     y_train, y_test = y[:split_idx], y[split_idx:]
     print(f"[Pipeline] Train: {X_train.shape[0]}  |  Test: {X_test.shape[0]}")
 
-    # 7. Save artefacts
+    # 7. Save artefacts (lightweight for deployment)
     if save:
         artefacts = {
-            'X_train': X_train, 'X_test': X_test,
-            'y_train': y_train, 'y_test': y_test,
             'feature_scaler': feature_scaler,
             'target_scaler': target_scaler,
             'feature_cols': feature_cols,
             'target_col': target_col,
             'sequence_length': SEQUENCE_LENGTH,
-            'df': df,
         }
         save_path = os.path.join(SAVE_DIR, 'pipeline_artefacts.pkl')
         with open(save_path, 'wb') as f:
