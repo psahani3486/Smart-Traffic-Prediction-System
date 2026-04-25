@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send, Gauge } from 'lucide-react';
 import axios from 'axios';
 
-const API = 'http://localhost:8000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const WEATHER_OPTIONS = ['Clear', 'Clouds', 'Rain', 'Snow', 'Mist', 'Drizzle', 'Haze', 'Fog', 'Thunderstorm'];
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

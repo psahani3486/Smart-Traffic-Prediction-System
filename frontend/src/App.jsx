@@ -8,7 +8,7 @@ import WeatherImpact from './components/WeatherImpact';
 import ModelPerformance from './components/ModelPerformance';
 import RouteRecommendation from './components/RouteRecommendation';
 
-const API = 'http://localhost:8000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function App() {
   const [analysis, setAnalysis] = useState(null);
