@@ -61,13 +61,17 @@ An end-to-end, production-grade Smart Traffic Prediction System powered by Deep 
 
 | Dashboard Overview | Prediction Engine |
 | :---: | :---: |
-| ![Dashboard Overview](https://via.placeholder.com/600x400?text=Dashboard+Overview) | ![Prediction Panel](https://via.placeholder.com/600x400?text=Prediction+Engine) |
+| ![Dashboard Overview](screenshots/overview.png) | ![Prediction Panel](screenshots/patterns.png) |
 
 | Traffic Patterns | Weather Impact |
 | :---: | :---: |
-| ![Traffic Patterns](https://via.placeholder.com/600x400?text=Traffic+Patterns) | ![Weather Impact](https://via.placeholder.com/600x400?text=Weather+Impact) |
+| ![Traffic Patterns](screenshots/impact.png) | ![Weather Impact](screenshots/distribution.png) |
 
-*(Note: Replace placeholders with actual screenshots from the `artifacts` directory or your own captures)*
+| Area Insights |
+| :---: |
+| ![Area Insights](screenshots/areas.png) |
+
+*(Real-time dashboard captures from the Delhi TrafficAI system)*
 
 ---
 
