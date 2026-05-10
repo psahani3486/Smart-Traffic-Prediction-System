@@ -1,4 +1,4 @@
-# 🚦 Delhi TrafficAI: Smart Traffic Prediction System
+#  Delhi TrafficAI: Smart Traffic Prediction System
 
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange?logo=tensorflow)](https://tensorflow.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-green?logo=fastapi)](https://fastapi.tiangolo.com)
@@ -10,7 +10,7 @@ An end-to-end, production-grade Smart Traffic Prediction System powered by Deep 
 
 ---
 
-## 🌟 Project Overview
+##  Project Overview
 
 **Delhi TrafficAI** is designed to transform urban mobility by providing real-time traffic speed forecasting. Moving beyond traditional time-series models, this system leverages Deep Neural Network (DNN) ensembles to process tabular trip data, delivering high-accuracy predictions ($R^2 \approx 0.91$) and actionable route intelligence.
 
@@ -21,27 +21,27 @@ An end-to-end, production-grade Smart Traffic Prediction System powered by Deep 
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
-### 🧠 Deep Learning Engine
+###  Deep Learning Engine
 - **Multi-Model Ensemble**: Features 4 distinct DNN architectures (Basic, Deep, Wide, and Heavy-Dropout).
 - **Categorical Intelligence**: Advanced preprocessing using One-Hot Encoding for areas, weather, and road types.
 - **Regression Accuracy**: High-performance speed prediction with real-time RMSE and MAE tracking.
 
-### 📊 Advanced Analytics Dashboard
+###  Advanced Analytics Dashboard
 - **SVG Speedometer**: Real-time animated gauge for predicted vehicle speeds.
 - **Traffic Patterns**: Cross-analysis of speeds by Time of Day vs. Road Type.
 - **Environmental Impact**: Visualizes how Fog, Rain, and Heatwaves affect Delhi's traffic flow.
 - **Area-Wise Ranking**: A comprehensive leaderboard of all 25 Delhi zones ranked by average speed.
 
-### 🛣️ Route Intelligence
+###  Route Intelligence
 - **Dynamic Recommendations**: Suggestions for the fastest routes based on historical data.
 - **Travel Time Estimation**: Real-time calculation of trip duration based on distance and predicted speed.
 - **Rush Hour Alerts**: Automated warnings for peak morning and evening traffic periods.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 **Backend:**
 - **Framework**: FastAPI (Python 3.10+)
@@ -57,7 +57,7 @@ An end-to-end, production-grade Smart Traffic Prediction System powered by Deep 
 
 ---
 
-## 📸 Screenshots
+##  Screenshots
 
 | Dashboard Overview | Prediction Engine |
 | :---: | :---: |
@@ -71,11 +71,9 @@ An end-to-end, production-grade Smart Traffic Prediction System powered by Deep 
 | :---: |
 | ![Area Insights](screenshots/areas.png) |
 
-*(Real-time dashboard captures from the Delhi TrafficAI system)*
-
 ---
 
-## 📂 Folder Structure
+##  Folder Structure
 
 ```text
 Smart-Traffic-Prediction/
@@ -98,7 +96,7 @@ Smart-Traffic-Prediction/
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 ### 1. Prerequisites
 - Python 3.10+
@@ -131,7 +129,7 @@ npm run dev
 
 ---
 
-## 🧪 Resume-Worthy Description
+## Project Description
 
 **Smart Traffic Prediction System | Deep Learning & Full-Stack Development**
 - Designed and deployed an end-to-end traffic forecasting system using **TensorFlow/Keras** and **FastAPI**, achieving an **R² score of 0.91** for speed prediction.
@@ -141,16 +139,15 @@ npm run dev
 
 ---
 
-## 🔮 Future Scope
+##  Future Scope
 - **Live IoT Integration**: Connecting real-time GPS sensors for live traffic updates.
 - **Explainable AI (XAI)**: Integrating SHAP or LIME to explain model decisions (e.g., why a certain route is predicted to be slow).
 - **Mobile Application**: Porting the dashboard to a Flutter/React Native mobile app for on-the-go route planning.
 
 ---
 
-## 📄 License
+##  License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Developed with ❤️ by [Your Name/Github Handle]**
