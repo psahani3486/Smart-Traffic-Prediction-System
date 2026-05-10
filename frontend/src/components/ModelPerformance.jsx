@@ -62,10 +62,11 @@ export default function ModelPerformance({ modelInfo, predictions }) {
   });
 
   // Predictions chart (last 200 points for readability)
-  const predData = predictions?.y_true ? predictions.y_true.slice(-200).map((v, i) => ({
+  const sampleCount = Math.min(200, predictions?.y_true?.length || 0);
+  const predData = predictions?.y_true ? predictions.y_true.slice(-sampleCount).map((v, i) => ({
     idx: i,
-    actual: Math.round(v),
-    predicted: Math.round(predictions.y_pred[predictions.y_true.length - 200 + i]),
+    actual: Math.round(v * 10) / 10,
+    predicted: Math.round((predictions.y_pred[predictions.y_true.length - sampleCount + i] || 0) * 10) / 10,
   })) : [];
 
   // Training loss curves for best model
@@ -83,7 +84,7 @@ export default function ModelPerformance({ modelInfo, predictions }) {
         <h2>Model Performance</h2>
       </div>
       <p className="section-subtitle">
-        Deep learning model comparison and evaluation metrics
+        Deep learning DNN model comparison for Delhi traffic speed prediction
       </p>
 
       {/* Model comparison table */}
@@ -127,7 +128,7 @@ export default function ModelPerformance({ modelInfo, predictions }) {
         <div className="glass-card">
           <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
             <TrendingUp size={16} style={{ color: 'var(--accent-cyan)' }} />
-            Actual vs Predicted
+            Actual vs Predicted (km/h)
           </h3>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">

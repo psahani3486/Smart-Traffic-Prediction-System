@@ -4,22 +4,22 @@ import { TrendingUp, Clock, BarChart3, Database, Zap, MapPin } from 'lucide-reac
 export default function Hero({ stats }) {
   const s = stats || {};
   const cards = [
-    { label: 'Avg Volume', value: s.avg_volume ? Math.round(s.avg_volume).toLocaleString() : '—', detail: 'vehicles / hour', color: 'cyan', icon: TrendingUp },
-    { label: 'Peak Hour', value: s.peak_hour !== undefined ? `${s.peak_hour}:00` : '—', detail: 'highest traffic', color: 'purple', icon: Clock },
-    { label: 'Data Points', value: s.total_records ? s.total_records.toLocaleString() : '—', detail: 'hourly records', color: 'green', icon: Database },
-    { label: 'Max Volume', value: s.max_volume ? s.max_volume.toLocaleString() : '—', detail: 'peak recorded', color: 'amber', icon: BarChart3 },
-    { label: 'Busiest Day', value: s.busiest_day || '—', detail: 'highest average', color: 'pink', icon: Zap },
-    { label: 'Date Range', value: s.date_start && s.date_end ? `${s.date_start.slice(2)} - ${s.date_end.slice(2)}` : '—', detail: 'dataset span', color: 'blue', icon: MapPin },
+    { label: 'Avg Speed', value: s.avg_speed ? `${s.avg_speed}` : '—', detail: 'km/h overall', color: 'cyan', icon: TrendingUp },
+    { label: 'Top Origin', value: s.top_start_area || '—', detail: 'most trips start here', color: 'purple', icon: MapPin },
+    { label: 'Data Points', value: s.total_records ? s.total_records.toLocaleString() : '—', detail: 'trip records', color: 'green', icon: Database },
+    { label: 'Max Speed', value: s.max_speed ? `${s.max_speed}` : '—', detail: 'km/h peak', color: 'amber', icon: BarChart3 },
+    { label: 'Delhi Areas', value: s.unique_areas || '—', detail: 'coverage zones', color: 'pink', icon: Zap },
+    { label: 'Avg Distance', value: s.avg_distance ? `${s.avg_distance} km` : '—', detail: 'per trip', color: 'blue', icon: Clock },
   ];
 
   return (
     <section className="hero-section" id="hero-section">
       <h1 className="hero-title">
-        Smart <span>Traffic Prediction</span> System
+        Delhi <span>Traffic Prediction</span> System
       </h1>
       <p className="hero-description">
-        AI-powered traffic forecasting using Deep Learning Ensembles on Metro Interstate data.
-        Predicting congestion with real-time analytics, weather integration, and route recommendations.
+        AI-powered traffic speed forecasting using Deep Neural Networks on Delhi traffic data.
+        Predicting congestion with real-time analytics across 25 Delhi zones, weather integration, and route recommendations.
       </p>
       <div className="stats-grid">
         {cards.map((c, i) => (

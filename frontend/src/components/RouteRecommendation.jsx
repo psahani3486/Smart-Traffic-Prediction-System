@@ -1,52 +1,42 @@
 import React from 'react';
-import { Navigation, AlertTriangle, Info, ArrowRight } from 'lucide-react';
+import { Navigation, AlertTriangle, Info, ArrowRight, TrendingDown, TrendingUp } from 'lucide-react';
 
-const ROUTES = [
-  {
-    name: 'Interstate 94 Express',
-    detail: 'Primary highway route - fastest during off-peak',
-    time: '22 min',
-    type: 'fast',
-    delay: '+0 min',
-  },
-  {
-    name: 'Highway 61 Alternate',
-    detail: 'Scenic route via highway 61 - moderate traffic',
-    time: '28 min',
-    type: 'moderate',
-    delay: '+6 min',
-  },
-  {
-    name: 'Local Streets Route',
-    detail: 'City streets - slower but avoids highway congestion',
-    time: '35 min',
-    type: 'slow',
-    delay: '+13 min',
-  },
-];
-
-export default function RouteRecommendation({ stats }) {
+export default function RouteRecommendation({ stats, topRoutes }) {
   const hour = new Date().getHours();
-  const isRushHour = (hour >= 7 && hour <= 9) || (hour >= 16 && hour <= 18);
+  const isRushHour = (hour >= 8 && hour <= 10) || (hour >= 17 && hour <= 20);
+
+  // Build dynamic routes from topRoutes data
+  const dynamicRoutes = topRoutes?.routes ? topRoutes.routes.slice(0, 3).map((r, i) => ({
+    name: r,
+    detail: `${topRoutes.avg_distance[i]} km · ${topRoutes.count[i]} recorded trips`,
+    speed: `${topRoutes.avg_speed[i]} km/h`,
+    type: topRoutes.avg_speed[i] >= 35 ? 'fast' : topRoutes.avg_speed[i] >= 25 ? 'moderate' : 'slow',
+  })) : [
+    { name: 'Connaught Place → IGI Airport', detail: 'Via NH48 – fastest at night', speed: '42 km/h', type: 'fast' },
+    { name: 'Rohini → Dwarka', detail: 'Via Ring Road – moderate during peak', speed: '28 km/h', type: 'moderate' },
+    { name: 'Chandni Chowk → Nehru Place', detail: 'Via ITO – heavy congestion zones', speed: '15 km/h', type: 'slow' },
+  ];
 
   return (
     <div id="route-recommendation">
       <div className="section-header">
         <Navigation size={22} />
-        <h2>Route Recommendations</h2>
+        <h2>Route Intelligence</h2>
       </div>
-      <p className="section-subtitle">Smart route suggestions based on current congestion patterns</p>
+      <p className="section-subtitle">AI-driven route suggestions based on Delhi traffic patterns and congestion analysis</p>
 
       <div className="grid-2">
         <div className="glass-card">
           <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>
-            Suggested Routes
+            Top Routes by Speed
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            {ROUTES.map((r, i) => (
+            {dynamicRoutes.map((r, i) => (
               <div key={i} className="route-card">
                 <div className={`route-icon ${r.type}`}>
-                  <ArrowRight size={20} />
+                  {r.type === 'fast' ? <TrendingUp size={20} /> :
+                   r.type === 'slow' ? <TrendingDown size={20} /> :
+                   <ArrowRight size={20} />}
                 </div>
                 <div className="route-info">
                   <div className="route-name">{r.name}</div>
@@ -56,8 +46,7 @@ export default function RouteRecommendation({ stats }) {
                   color: r.type === 'fast' ? 'var(--accent-green)' :
                          r.type === 'moderate' ? 'var(--accent-amber)' : 'var(--accent-red)'
                 }}>
-                  {r.time}
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>{r.delay}</div>
+                  {r.speed}
                 </div>
               </div>
             ))}
@@ -69,39 +58,39 @@ export default function RouteRecommendation({ stats }) {
           {isRushHour && (
             <div className="alert-banner warning">
               <AlertTriangle size={18} />
-              <span><strong>Rush Hour Alert:</strong> Peak traffic expected. Consider alternate routes.</span>
+              <span><strong>Rush Hour Alert:</strong> Peak traffic expected in Delhi. Consider alternate routes via Highways.</span>
             </div>
           )}
           <div className="alert-banner info">
             <Info size={18} />
-            <span><strong>Pattern Insight:</strong> {stats?.busiest_day || 'Friday'} typically has the highest traffic volume.</span>
+            <span><strong>Data Insight:</strong> {stats?.total_records?.toLocaleString() || '4,000'} trips analyzed across {stats?.unique_areas || 25} Delhi zones.</span>
           </div>
 
-          {/* Quick insights */}
+          {/* Delhi congestion insights */}
           <div className="glass-card">
             <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>
-              Congestion Insights
+              Delhi Congestion Insights
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Morning Peak</span>
-                <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>07:00 - 09:00</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Slowest Period</span>
+                <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>Evening Peak</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Evening Peak</span>
-                <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>16:00 - 18:00</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Fastest Period</span>
+                <span style={{ fontWeight: 600, color: 'var(--accent-green)' }}>Night</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Lowest Traffic</span>
-                <span style={{ fontWeight: 600, color: 'var(--accent-green)' }}>02:00 - 04:00</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Best Road Type</span>
+                <span style={{ fontWeight: 600, color: 'var(--accent-amber)' }}>Highway (39+ km/h)</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Weekend Reduction</span>
-                <span style={{ fontWeight: 600, color: 'var(--accent-green)' }}>~30% less</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Weekend Boost</span>
+                <span style={{ fontWeight: 600, color: 'var(--accent-green)' }}>~29% faster</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0' }}>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Rain Impact</span>
-                <span style={{ fontWeight: 600, color: 'var(--accent-amber)' }}>Slight decrease</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Fog Impact</span>
+                <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>45% slower</span>
               </div>
             </div>
           </div>

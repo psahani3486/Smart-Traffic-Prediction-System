@@ -1,109 +1,65 @@
 """
 Smart Traffic Prediction System — Model Definitions
 =====================================================
-Four deep-learning architectures for traffic volume forecasting.
+Deep learning architectures for tabular data regression.
 """
 
 from keras.models import Sequential
-from keras.layers import (
-    LSTM, GRU, Dense, Dropout, BatchNormalization, Bidirectional, Input,
-    Conv1D, GlobalMaxPooling1D, Flatten
-)
+from keras.layers import Dense, Dropout, BatchNormalization, Input
 
-
-def build_lstm(input_shape, name='LSTM_Basic'):
-    """Single-layer LSTM (baseline)."""
+def build_dnn_basic(input_shape, name='DNN_Basic'):
+    """Simple 2-layer Neural Network."""
     model = Sequential(name=name)
     model.add(Input(shape=input_shape))
-    model.add(LSTM(64, return_sequences=False))
+    model.add(Dense(64, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(1)) # Predicting speed
+    return model
+
+def build_dnn_deep(input_shape, name='DNN_Deep'):
+    """Deeper Neural Network for capturing complex non-linearities."""
+    model = Sequential(name=name)
+    model.add(Input(shape=input_shape))
+    model.add(Dense(128, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.2))
+    model.add(Dense(64, activation='relu'))
     model.add(BatchNormalization())
     model.add(Dropout(0.2))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(1))
     return model
 
-
-def build_stacked_lstm(input_shape, name='Stacked_LSTM'):
-    """3-layer deep LSTM with progressive dropout."""
+def build_dnn_wide(input_shape, name='DNN_Wide'):
+    """Wide Neural Network."""
     model = Sequential(name=name)
     model.add(Input(shape=input_shape))
-    model.add(LSTM(128, return_sequences=True))
+    model.add(Dense(256, activation='relu'))
     model.add(BatchNormalization())
-    model.add(Dropout(0.2))
-    model.add(LSTM(64, return_sequences=True))
+    model.add(Dropout(0.3))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dense(1))
+    return model
+
+def build_dnn_dropout(input_shape, name='DNN_HeavyDropout'):
+    """Model with heavy dropout to prevent overfitting on categorical encodings."""
+    model = Sequential(name=name)
+    model.add(Input(shape=input_shape))
+    model.add(Dense(128, activation='relu'))
     model.add(BatchNormalization())
-    model.add(Dropout(0.25))
-    model.add(LSTM(32, return_sequences=False))
+    model.add(Dropout(0.4))
+    model.add(Dense(64, activation='relu'))
     model.add(BatchNormalization())
     model.add(Dropout(0.3))
     model.add(Dense(32, activation='relu'))
+    model.add(Dropout(0.2))
     model.add(Dense(1))
     return model
-
-
-def build_bilstm(input_shape, name='Bidirectional_LSTM'):
-    """Bidirectional LSTM for richer temporal representation."""
-    model = Sequential(name=name)
-    model.add(Input(shape=input_shape))
-    model.add(Bidirectional(LSTM(64, return_sequences=True)))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.2))
-    model.add(Bidirectional(LSTM(32, return_sequences=False)))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.25))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(1))
-    return model
-
-
-def build_gru(input_shape, name='GRU_Model'):
-    """GRU — lighter alternative to LSTM."""
-    model = Sequential(name=name)
-    model.add(Input(shape=input_shape))
-    model.add(GRU(128, return_sequences=True))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.2))
-    model.add(GRU(64, return_sequences=False))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.25))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(1))
-    return model
-
-
-def build_cnn_1d(input_shape, name='CNN_1D'):
-    """1D CNN for fast feature extraction over time steps."""
-    model = Sequential(name=name)
-    model.add(Input(shape=input_shape))
-    model.add(Conv1D(filters=64, kernel_size=3, activation='relu', padding='same'))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.2))
-    model.add(Conv1D(filters=32, kernel_size=3, activation='relu', padding='same'))
-    model.add(GlobalMaxPooling1D())
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(1))
-    return model
-
-
-def build_cnn_lstm(input_shape, name='CNN_LSTM_Hybrid'):
-    """CNN-LSTM hybrid mapping spatial-temporal features."""
-    model = Sequential(name=name)
-    model.add(Input(shape=input_shape))
-    model.add(Conv1D(filters=64, kernel_size=3, activation='relu', padding='same'))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.2))
-    model.add(LSTM(64, return_sequences=False))
-    model.add(Dropout(0.2))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(1))
-    return model
-
 
 MODEL_BUILDERS = {
-    'LSTM':           build_lstm,
-    'Stacked_LSTM':   build_stacked_lstm,
-    'Bidirectional_LSTM': build_bilstm,
-    'GRU':            build_gru,
-    'CNN_1D':         build_cnn_1d,
-    'CNN_LSTM':       build_cnn_lstm,
+    'DNN_Basic': build_dnn_basic,
+    'DNN_Deep': build_dnn_deep,
+    'DNN_Wide': build_dnn_wide,
+    'DNN_HeavyDropout': build_dnn_dropout,
 }

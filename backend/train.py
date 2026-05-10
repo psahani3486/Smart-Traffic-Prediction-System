@@ -1,12 +1,11 @@
 """
 Smart Traffic Prediction System — Training Orchestrator
 ========================================================
-Trains all four models, evaluates, compares, and saves the best.
+Trains DNN models on the tabular dataset, evaluates, and saves the best.
 """
 
 import os
 import json
-import pickle
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
@@ -18,27 +17,23 @@ from data_pipeline import run_pipeline, SAVE_DIR
 from models import MODEL_BUILDERS
 
 # ── Configuration ───────────────────────────────────────────────────────────
-EPOCHS = 50
+EPOCHS = 100
 BATCH_SIZE = 64
-PATIENCE_EARLY = 8
-PATIENCE_LR = 4
+PATIENCE_EARLY = 10
+PATIENCE_LR = 5
 
-
-def evaluate_model(model, X_test, y_test, target_scaler):
-    """Compute RMSE, MAE, R², MAPE on test set (in original scale)."""
-    y_pred_scaled = model.predict(X_test, verbose=0).flatten()
-
-    # Inverse transform
-    y_true = target_scaler.inverse_transform(y_test.reshape(-1, 1)).flatten()
-    y_pred = target_scaler.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten()
+def evaluate_model(model, X_test, y_test):
+    """Compute RMSE, MAE, R², MAPE on test set."""
+    y_pred = model.predict(X_test, verbose=0).flatten()
+    y_true = y_test.flatten()
 
     rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
     mae = float(mean_absolute_error(y_true, y_pred))
     r2 = float(r2_score(y_true, y_pred))
 
-    # MAPE — avoid division by zero
+    # MAPE
     mask = y_true != 0
-    mape = float(np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100)
+    mape = float(np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100) if np.sum(mask) > 0 else 0.0
 
     return {
         'rmse': round(rmse, 2),
@@ -49,10 +44,8 @@ def evaluate_model(model, X_test, y_test, target_scaler):
         'y_pred': y_pred.tolist(),
     }
 
-
 def train_all_models():
     """Train every architecture and return comparison results."""
-    # 1. Run data pipeline
     print("=" * 60)
     print("  SMART TRAFFIC PREDICTION - TRAINING PIPELINE")
     print("=" * 60)
@@ -62,13 +55,10 @@ def train_all_models():
     X_test = artefacts['X_test']
     y_train = artefacts['y_train']
     y_test = artefacts['y_test']
-    target_scaler = artefacts['target_scaler']
-    input_shape = (X_train.shape[1], X_train.shape[2])
+    input_shape = (X_train.shape[1],)
 
     print(f"\n[Train] Input shape: {input_shape}")
-    print(f"[Train] Train samples: {len(X_train)}, Test samples: {len(X_test)}")
 
-    # 2. Callbacks
     early_stop = EarlyStopping(
         monitor='val_loss', patience=PATIENCE_EARLY,
         restore_best_weights=True, verbose=1
@@ -83,13 +73,13 @@ def train_all_models():
     best_r2 = -np.inf
     best_model_name = None
 
-    # 3. Train each model
     for name, builder in MODEL_BUILDERS.items():
         print(f"\n{'-' * 50}")
         print(f"  Training: {name}")
         print(f"{'-' * 50}")
 
         model = builder(input_shape)
+        # We use MSE loss since target is average_speed_kmph
         model.compile(optimizer='adam', loss='mse', metrics=['mae'])
         model.summary()
 
@@ -102,8 +92,7 @@ def train_all_models():
             verbose=1,
         )
 
-        # Evaluate
-        metrics = evaluate_model(model, X_test, y_test, target_scaler)
+        metrics = evaluate_model(model, X_test, y_test)
         results[name] = metrics
         histories[name] = {
             'loss': [float(v) for v in history.history['loss']],
@@ -115,17 +104,16 @@ def train_all_models():
         print(f"  -> RMSE: {metrics['rmse']}  |  MAE: {metrics['mae']}  "
               f"|  R2: {metrics['r2']}  |  MAPE: {metrics['mape']}%")
 
-        # Save individual model
         model_path = os.path.join(SAVE_DIR, f'{name}.keras')
         model.save(model_path)
         print(f"  -> Saved: {model_path}")
 
-        # Track best
+        # Best is max R2
         if metrics['r2'] > best_r2:
             best_r2 = metrics['r2']
             best_model_name = name
 
-    # 4. Save comparison report
+    # Report
     report = {
         'best_model': best_model_name,
         'models': {},
@@ -139,10 +127,9 @@ def train_all_models():
             'mape': results[name]['mape'],
         }
 
-    # Save predictions from best model (for charts)
     report['predictions'] = {
-        'y_true': results[best_model_name]['y_true'][-500:],
-        'y_pred': results[best_model_name]['y_pred'][-500:],
+        'y_true': results[best_model_name]['y_true'][-200:], # sample 200
+        'y_pred': results[best_model_name]['y_pred'][-200:],
     }
 
     report_path = os.path.join(SAVE_DIR, 'training_report.json')
@@ -152,7 +139,6 @@ def train_all_models():
     print(f"[Train] * Best model: {best_model_name} (R2 = {best_r2:.4f})")
 
     return report
-
 
 if __name__ == '__main__':
     train_all_models()

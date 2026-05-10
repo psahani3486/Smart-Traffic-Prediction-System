@@ -12,7 +12,7 @@ venv/
 ENV/
 
 # Required deployment artefacts
-!Metro_Interstate_Traffic_Volume.csv
+!delhi_traffic_features.csv
 !backend/saved_models/*.keras
 !backend/saved_models/*.pkl
 !backend/saved_models/*.json

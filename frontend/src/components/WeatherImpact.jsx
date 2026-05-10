@@ -1,15 +1,18 @@
 import React from 'react';
-import { CloudRain, Thermometer, CalendarCheck } from 'lucide-react';
+import { CloudRain, Navigation, Shield } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Cell, LineChart, Line
+  ResponsiveContainer, Cell, PieChart, Pie, Legend
 } from 'recharts';
 
 const WEATHER_COLORS = {
-  'Squall': '#ef4444', 'Thunderstorm': '#ec4899', 'Rain': '#3366ff',
-  'Drizzle': '#60a5fa', 'Snow': '#c4b5fd', 'Fog': '#6b7280',
-  'Mist': '#8b8fa3', 'Haze': '#a78bfa', 'Smoke': '#78716c',
-  'Clouds': '#8b5cf6', 'Clear': '#10b981',
+  'Clear': '#10b981', 'Rain': '#3b82f6', 'Fog': '#94a3b8', 'Heatwave': '#ef4444',
+};
+const ROAD_COLORS = {
+  'Highway': '#f59e0b', 'Main Road': '#8b5cf6', 'Inner Road': '#06b6d4',
+};
+const DENSITY_COLORS = {
+  'Low': '#10b981', 'Medium': '#f59e0b', 'High': '#ef4444', 'Very High': '#ec4899',
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -21,52 +24,52 @@ const CustomTooltip = ({ active, payload, label }) => {
     }}>
       <p style={{ color: '#8b8fa3', marginBottom: 4 }}>{label}</p>
       {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color || '#00d4ff', fontWeight: 600 }}>
-          {p.name}: {Math.round(p.value).toLocaleString()}
+        <p key={i} style={{ color: p.color || p.fill || '#00d4ff', fontWeight: 600 }}>
+          {p.name}: {typeof p.value === 'number' ? `${p.value} km/h` : p.value}
         </p>
       ))}
     </div>
   );
 };
 
-export default function WeatherImpact({ weather, temperature, holiday, monthly }) {
+export default function WeatherImpact({ weather, roadType, density }) {
   const weatherData = weather ? weather.categories.map((c, i) => ({
     name: c, mean: weather.mean[i], count: weather.count[i],
   })) : [];
 
-  const tempData = temperature ? temperature.bins.map((b, i) => ({
-    range: b, mean: temperature.mean[i],
+  const roadData = roadType ? roadType.categories.map((c, i) => ({
+    name: c, mean: roadType.mean[i], count: roadType.count[i],
   })) : [];
 
-  const monthlyData = monthly ? monthly.months.map((m, i) => ({
-    month: m, mean: monthly.mean[i],
+  const densityData = density ? density.levels.map((l, i) => ({
+    name: l, value: density.count[i], mean: density.mean[i],
   })) : [];
 
   return (
     <div id="weather-impact">
       <div className="section-header">
         <CloudRain size={22} />
-        <h2>Weather & Environmental Impact</h2>
+        <h2>Environmental & Infrastructure Impact</h2>
       </div>
-      <p className="section-subtitle">How weather, temperature, holidays, and seasons affect traffic</p>
+      <p className="section-subtitle">How weather, road type, and traffic density affect vehicle speeds across Delhi</p>
 
-      <div className="grid-2">
+      <div className="grid-3">
         {/* Weather categories */}
         <div className="glass-card">
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>
-            Traffic by Weather Condition
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>
+            Speed by Weather
           </h3>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weatherData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis type="number" stroke="#5a5f73" fontSize={11} tickLine={false} />
+                <XAxis type="number" stroke="#5a5f73" fontSize={11} tickLine={false} domain={[0, 'auto']} />
                 <YAxis dataKey="name" type="category" stroke="#5a5f73" fontSize={11}
-                  tickLine={false} width={90} />
+                  tickLine={false} width={80} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="mean" name="Avg Volume" radius={[0, 6, 6, 0]} barSize={20}>
+                <Bar dataKey="mean" name="Avg Speed" radius={[0, 6, 6, 0]} barSize={22}>
                   {weatherData.map((entry, i) => (
-                    <Cell key={i} fill={WEATHER_COLORS[entry.name] || '#8b5cf6'} fillOpacity={0.8} />
+                    <Cell key={i} fill={WEATHER_COLORS[entry.name] || '#8b5cf6'} fillOpacity={0.85} />
                   ))}
                 </Bar>
               </BarChart>
@@ -74,91 +77,65 @@ export default function WeatherImpact({ weather, temperature, holiday, monthly }
           </div>
         </div>
 
-        {/* Temperature */}
+        {/* Road Type */}
         <div className="glass-card">
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Thermometer size={16} style={{ color: 'var(--accent-amber)' }} />
-            Traffic vs Temperature
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+            <Navigation size={16} style={{ color: 'var(--accent-amber)' }} />
+            Speed by Road Type
           </h3>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={tempData}>
-                <defs>
-                  <linearGradient id="gradTemp" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.8} />
-                    <stop offset="100%" stopColor="#ef4444" stopOpacity={0.4} />
-                  </linearGradient>
-                </defs>
+              <BarChart data={roadData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="range" stroke="#5a5f73" fontSize={10} tickLine={false} angle={-20} />
-                <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} />
+                <XAxis dataKey="name" stroke="#5a5f73" fontSize={11} tickLine={false} />
+                <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} domain={[0, 'auto']} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="mean" name="Avg Volume" fill="url(#gradTemp)" radius={[6,6,0,0]} barSize={36} />
+                <Bar dataKey="mean" name="Avg Speed" radius={[6, 6, 0, 0]} barSize={42}>
+                  {roadData.map((entry, i) => (
+                    <Cell key={i} fill={ROAD_COLORS[entry.name] || '#10b981'} fillOpacity={0.85} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Monthly trends */}
+        {/* Density Distribution Pie */}
         <div className="glass-card">
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>
-            Seasonal Traffic Trends
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+            <Shield size={16} style={{ color: 'var(--accent-green)' }} />
+            Density Distribution
           </h3>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
-                <defs>
-                  <linearGradient id="gradPurple" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="month" stroke="#5a5f73" fontSize={11} tickLine={false} />
-                <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey="mean" name="Avg Volume" stroke="#8b5cf6"
-                  strokeWidth={2.5} dot={{ fill: '#8b5cf6', r: 4 }} />
-              </LineChart>
+              <PieChart>
+                <Pie data={densityData} cx="50%" cy="45%"
+                  innerRadius={55} outerRadius={90} dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  labelLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+                  stroke="rgba(255,255,255,0.1)" strokeWidth={1}>
+                  {densityData.map((entry, i) => (
+                    <Cell key={i} fill={DENSITY_COLORS[entry.name] || '#8b5cf6'} fillOpacity={0.85} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(val) => `${val} trips`} />
+              </PieChart>
             </ResponsiveContainer>
           </div>
-        </div>
-
-        {/* Holiday effect */}
-        <div className="glass-card">
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <CalendarCheck size={16} style={{ color: 'var(--accent-green)' }} />
-            Holiday Impact
-          </h3>
-          {holiday && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', padding: '1rem 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Regular Days</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>
-                    {Math.round(holiday.regular_mean).toLocaleString()}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{holiday.regular_count.toLocaleString()} records</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Holidays</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-green)' }}>
-                    {Math.round(holiday.holiday_mean).toLocaleString()}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{holiday.holiday_count.toLocaleString()} records</div>
-                </div>
-              </div>
-              <div style={{
-                background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
-                borderRadius: 8, padding: '0.8rem', textAlign: 'center'
+          {/* Density speed cards */}
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+            {densityData.map((d, i) => (
+              <div key={i} style={{
+                flex: 1, minWidth: '80px', padding: '0.5rem',
+                background: 'rgba(255,255,255,0.03)', borderRadius: 6, textAlign: 'center',
+                border: `1px solid ${DENSITY_COLORS[d.name]}33`
               }}>
-                <span style={{ color: 'var(--accent-green)', fontWeight: 700, fontSize: '1.1rem' }}>
-                  {holiday.reduction_pct}% less traffic
-                </span>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}> on holidays</span>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>{d.name}</div>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: DENSITY_COLORS[d.name] }}>{d.mean}</div>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>km/h avg</div>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       </div>
     </div>

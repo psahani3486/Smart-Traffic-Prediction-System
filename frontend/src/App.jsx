@@ -7,8 +7,10 @@ import TrafficPatterns from './components/TrafficPatterns';
 import WeatherImpact from './components/WeatherImpact';
 import ModelPerformance from './components/ModelPerformance';
 import RouteRecommendation from './components/RouteRecommendation';
+import SpeedDistribution from './components/SpeedDistribution';
+import AreaInsights from './components/AreaInsights';
 
-const API = import.meta.env.VITE_API_URL || 'https://smart-traffic-prediction-system.onrender.com';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function App() {
   const [analysis, setAnalysis] = useState(null);
@@ -42,18 +44,22 @@ export default function App() {
         <Hero stats={analysis?.dataset_stats} />
         <PredictionPanel />
         <TrafficPatterns
-          hourly={analysis?.hourly_patterns}
+          timeOfDay={analysis?.time_of_day_patterns}
           daily={analysis?.daily_patterns}
-          heatmap={analysis?.weekly_heatmap}
+          crossAnalysis={analysis?.cross_analysis}
         />
         <WeatherImpact
           weather={analysis?.weather_impact}
-          temperature={analysis?.temperature_impact}
-          holiday={analysis?.holiday_effect}
-          monthly={analysis?.monthly_trends}
+          roadType={analysis?.road_type_impact}
+          density={analysis?.density_distribution}
         />
+        <SpeedDistribution
+          speedDist={analysis?.speed_distribution}
+          topRoutes={analysis?.top_routes}
+        />
+        <AreaInsights areaStats={analysis?.area_stats} />
         <ModelPerformance modelInfo={modelInfo} predictions={predictions} />
-        <RouteRecommendation stats={analysis?.dataset_stats} />
+        <RouteRecommendation stats={analysis?.dataset_stats} topRoutes={analysis?.top_routes} />
 
         {/* Footer */}
         <footer style={{
@@ -61,7 +67,7 @@ export default function App() {
           borderTop: '1px solid var(--border-glass)',
           color: 'var(--text-muted)', fontSize: '0.8rem'
         }}>
-          <p>Smart Traffic Prediction System &bull; Deep Learning Ensembles &bull; Built with TensorFlow, FastAPI & React</p>
+          <p>Delhi Smart Traffic Prediction System &bull; Deep Learning DNNs &bull; Built with TensorFlow, FastAPI & React</p>
         </footer>
       </main>
     </>

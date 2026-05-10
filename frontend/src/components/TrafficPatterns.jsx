@@ -1,9 +1,17 @@
 import React from 'react';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock, Layers } from 'lucide-react';
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, Legend, Cell,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
+
+const TIME_COLORS = {
+  'Morning Peak': '#f59e0b',
+  'Afternoon': '#10b981',
+  'Evening Peak': '#ef4444',
+  'Night': '#8b5cf6',
+};
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -14,133 +22,127 @@ const CustomTooltip = ({ active, payload, label }) => {
     }}>
       <p style={{ color: '#8b8fa3', marginBottom: 4 }}>{label}</p>
       {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color, fontWeight: 600 }}>
-          {p.name}: {Math.round(p.value).toLocaleString()}
+        <p key={i} style={{ color: p.color || p.fill || '#00d4ff', fontWeight: 600 }}>
+          {p.name}: {p.value} km/h
         </p>
       ))}
     </div>
   );
 };
 
-export default function TrafficPatterns({ hourly, daily, heatmap }) {
-  // Hourly chart data
-  const hourlyData = hourly ? hourly.hours.map((h, i) => ({
-    hour: `${String(h).padStart(2, '0')}:00`,
-    mean: hourly.mean[i],
-    median: hourly.median[i],
+export default function TrafficPatterns({ timeOfDay, daily, crossAnalysis }) {
+  // Time of Day chart data
+  const timeData = timeOfDay ? timeOfDay.labels.map((l, i) => ({
+    time: l,
+    mean: timeOfDay.mean[i],
+    median: timeOfDay.median[i],
+    count: timeOfDay.count[i],
   })) : [];
 
   // Daily chart data
   const dailyData = daily ? daily.days.map((d, i) => ({
-    day: d.slice(0, 3),
+    day: d,
     mean: daily.mean[i],
+    count: daily.count[i],
   })) : [];
 
-  // Heatmap color mapping
-  const getHeatColor = (value) => {
-    if (!value) return 'rgba(255,255,255,0.02)';
-    const max = 7000;
-    const ratio = Math.min(value / max, 1);
-    if (ratio < 0.3) return `rgba(16,185,129,${0.15 + ratio})`;
-    if (ratio < 0.6) return `rgba(245,158,11,${0.15 + ratio * 0.6})`;
-    return `rgba(239,68,68,${0.15 + ratio * 0.7})`;
-  };
+  // Cross analysis: time x road_type
+  const crossData = crossAnalysis ? crossAnalysis.times.map((t, ti) => {
+    const row = { time: t };
+    crossAnalysis.road_types.forEach((rt, ri) => {
+      row[rt] = crossAnalysis.values[ti]?.[ri] || 0;
+    });
+    return row;
+  }) : [];
+
+  const ROAD_COLORS = ['#00d4ff', '#f59e0b', '#8b5cf6'];
 
   return (
     <div id="traffic-patterns">
       <div className="section-header">
         <Clock size={22} />
-        <h2>Traffic Patterns</h2>
+        <h2>Speed & Congestion Patterns</h2>
       </div>
-      <p className="section-subtitle">Hourly, daily, and weekly traffic flow analysis</p>
+      <p className="section-subtitle">Average vehicle speeds across different time periods, days, and road types</p>
 
       <div className="grid-2">
-        {/* Hourly */}
+        {/* Time of Day */}
         <div className="glass-card">
           <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>
-            24-Hour Traffic Curve
+            Speed by Time of Day
           </h3>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={hourlyData}>
-                <defs>
-                  <linearGradient id="gradCyan" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00d4ff" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#00d4ff" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+              <BarChart data={timeData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="hour" stroke="#5a5f73" fontSize={11} tickLine={false}
-                  interval={2} />
-                <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} />
+                <XAxis dataKey="time" stroke="#5a5f73" fontSize={11} tickLine={false} />
+                <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} domain={[0, 'auto']} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ fontSize: '0.8rem' }} />
-                <Area type="monotone" dataKey="mean" name="Avg Volume" stroke="#00d4ff"
-                  fill="url(#gradCyan)" strokeWidth={2.5} />
-                <Area type="monotone" dataKey="median" name="Median" stroke="#8b5cf6"
-                  fill="none" strokeWidth={1.5} strokeDasharray="5 5" />
-              </AreaChart>
+                <Bar dataKey="mean" name="Avg Speed" radius={[6, 6, 0, 0]} barSize={42}>
+                  {timeData.map((entry, i) => (
+                    <Cell key={i} fill={TIME_COLORS[entry.time] || '#00d4ff'} fillOpacity={0.85} />
+                  ))}
+                </Bar>
+                <Bar dataKey="median" name="Median Speed" fill="#3366ff" fillOpacity={0.4}
+                  radius={[6, 6, 0, 0]} barSize={42} />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Daily */}
+        {/* Daily Weekday/Weekend */}
         <div className="glass-card">
           <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>
-            Weekly Traffic Volume
+            Weekday vs Weekend Speed
           </h3>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dailyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis dataKey="day" stroke="#5a5f73" fontSize={12} tickLine={false} />
-                <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} />
+                <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} domain={[0, 'auto']} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="mean" name="Avg Volume" fill="#8b5cf6" radius={[6, 6, 0, 0]}
-                  barSize={40} />
+                <Bar dataKey="mean" name="Avg Speed" radius={[8, 8, 0, 0]} barSize={60}>
+                  <Cell fill="#00d4ff" fillOpacity={0.8} />
+                  <Cell fill="#8b5cf6" fillOpacity={0.8} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
+          {/* Insight card */}
+          {dailyData.length === 2 && (
+            <div style={{
+              marginTop: '1rem', padding: '0.8rem 1rem',
+              background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
+              borderRadius: 8, fontSize: '0.85rem', color: 'var(--accent-green)'
+            }}>
+              <strong>Insight:</strong> Weekend speeds are {((dailyData[1]?.mean / dailyData[0]?.mean - 1) * 100).toFixed(0)}% faster than weekdays
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Heatmap */}
+      {/* Cross Analysis: Time x Road Type */}
       <div className="glass-card" style={{ marginTop: '1.5rem' }}>
         <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Calendar size={18} style={{ color: 'var(--accent-cyan)' }} />
-          Weekly Congestion Heatmap
+          <Layers size={18} style={{ color: 'var(--accent-cyan)' }} />
+          Speed Matrix — Time of Day × Road Type
         </h3>
-        {heatmap && (
-          <div className="heatmap-grid">
-            {/* Header row */}
-            <div className="heatmap-label"></div>
-            {heatmap.hours.map(h => (
-              <div key={h} className="heatmap-label">{h}</div>
-            ))}
-            {/* Data rows */}
-            {heatmap.days.map((day, di) => (
-              <React.Fragment key={day}>
-                <div className="heatmap-label">{day}</div>
-                {heatmap.values[di]?.map((val, hi) => (
-                  <div key={hi} className="heatmap-cell"
-                    style={{ background: getHeatColor(val) }}
-                    title={`${day} ${hi}:00 - ${Math.round(val).toLocaleString()} vehicles`}
-                  />
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
-        )}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', marginTop: '0.8rem', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ width: 12, height: 12, borderRadius: 2, background: 'rgba(16,185,129,0.3)' }}></span> Low
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ width: 12, height: 12, borderRadius: 2, background: 'rgba(245,158,11,0.5)' }}></span> Medium
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ width: 12, height: 12, borderRadius: 2, background: 'rgba(239,68,68,0.7)' }}></span> High
-          </span>
+        <div className="chart-container">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={crossData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="time" stroke="#5a5f73" fontSize={11} tickLine={false} />
+              <YAxis stroke="#5a5f73" fontSize={11} tickLine={false} domain={[0, 'auto']} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend wrapperStyle={{ fontSize: '0.8rem' }} />
+              {crossAnalysis?.road_types?.map((rt, idx) => (
+                <Bar key={rt} dataKey={rt} name={rt} fill={ROAD_COLORS[idx % ROAD_COLORS.length]}
+                  fillOpacity={0.75} radius={[4, 4, 0, 0]} barSize={28} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
