@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from keras.models import load_model
+import tflite_runtime.interpreter as tflite
 
 from data_pipeline import run_pipeline
 
@@ -21,7 +21,7 @@ app = FastAPI(title="Smart Traffic Prediction API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 
-model = None
+interpreter = None
 artefacts = None
 analysis = None
 training_report = None
@@ -47,10 +47,14 @@ def load_resources():
             training_report = json.load(f)
         # Load best model
         best = training_report.get('best_model', 'DNN_Basic')
-        model_path = os.path.join(SAVE_DIR, f'{best}.keras')
-        if os.path.exists(model_path):
-            model = load_model(model_path)
-            print(f"[API] Best model loaded: {best}")
+        tflite_path = os.path.join(SAVE_DIR, f'{best}.tflite')
+        if os.path.exists(tflite_path):
+            global interpreter, input_details, output_details
+            interpreter = tflite.Interpreter(model_path=tflite_path)
+            interpreter.allocate_tensors()
+            input_details = interpreter.get_input_details()
+            output_details = interpreter.get_output_details()
+            print(f"[API] Best TFLite model loaded: {best}")
 
     # Analysis results
     ana_path = os.path.join(SAVE_DIR, 'analysis_results.json')
@@ -75,11 +79,11 @@ class PredictionRequest(BaseModel):
 # ── Endpoints ──────────────────────────────────────────────────────────────
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "model_loaded": model is not None}
+    return {"status": "ok", "model_loaded": interpreter is not None}
 
 @app.post("/api/predict")
 def predict(req: PredictionRequest):
-    if model is None or artefacts is None:
+    if interpreter is None or artefacts is None:
         return {"error": "Model not loaded"}
 
     # Prepare data for prediction
@@ -101,8 +105,10 @@ def predict(req: PredictionRequest):
     # Combine
     X_input = np.hstack([scaled_nums, encoded_cats])
 
-    # Predict speed
-    pred_speed = model.predict(X_input, verbose=0).flatten()[0]
+    # Predict speed using TFLite
+    interpreter.set_tensor(input_details[0]['index'], X_input.astype(np.float32))
+    interpreter.invoke()
+    pred_speed = interpreter.get_tensor(output_details[0]['index'])[0][0]
     pred_speed = max(0, float(pred_speed))
 
     # Derive congestion level
