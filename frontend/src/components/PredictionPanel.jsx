@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send, Gauge, MapPin, Clock, Zap } from 'lucide-react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API = import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000';
 
 const AREAS = ["AIIMS","Chandni Chowk","Civil Lines","Connaught Place","Dwarka","Greater Kailash","Hauz Khas","IGI Airport","Janakpuri","Kalkaji","Karol Bagh","Lajpat Nagar","Mayur Vihar","Model Town","Nehru Place","Noida Sector 18","Okhla","Pitampura","Preet Vihar","Punjabi Bagh","Rajouri Garden","Rohini","Saket","Shahdara","Vasant Kunj"];
 const TIME_OF_DAY = ["Morning Peak", "Afternoon", "Evening Peak", "Night"];

@@ -10,7 +10,7 @@ import RouteRecommendation from './components/RouteRecommendation';
 import SpeedDistribution from './components/SpeedDistribution';
 import AreaInsights from './components/AreaInsights';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API = import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000';
 
 export default function App() {
   const [analysis, setAnalysis] = useState(null);
