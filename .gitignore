@@ -6,7 +6,7 @@ __pycache__/
 !backend/saved_models/*.keras
 !backend/saved_models/*.pkl
 !backend/saved_models/*.json
-!backend/saved_models/*.tflite
+!backend/saved_models/*.onnx
 .env
 .venv/
 venv/

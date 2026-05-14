@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-tflite-runtime
+onnxruntime
 pandas
 numpy
 scikit-learn

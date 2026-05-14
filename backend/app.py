@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-import tflite_runtime.interpreter as tflite
+import onnxruntime as ort
 
 from data_pipeline import run_pipeline
 
@@ -21,7 +21,7 @@ app = FastAPI(title="Smart Traffic Prediction API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 
-interpreter = None
+ort_session = None
 artefacts = None
 analysis = None
 training_report = None
@@ -47,14 +47,12 @@ def load_resources():
             training_report = json.load(f)
         # Load best model
         best = training_report.get('best_model', 'DNN_Basic')
-        tflite_path = os.path.join(SAVE_DIR, f'{best}.tflite')
-        if os.path.exists(tflite_path):
-            global interpreter, input_details, output_details
-            interpreter = tflite.Interpreter(model_path=tflite_path)
-            interpreter.allocate_tensors()
-            input_details = interpreter.get_input_details()
-            output_details = interpreter.get_output_details()
-            print(f"[API] Best TFLite model loaded: {best}")
+        onnx_path = os.path.join(SAVE_DIR, f'{best}.onnx')
+        if os.path.exists(onnx_path):
+            global ort_session, input_name
+            ort_session = ort.InferenceSession(onnx_path)
+            input_name = ort_session.get_inputs()[0].name
+            print(f"[API] Best ONNX model loaded: {best}")
 
     # Analysis results
     ana_path = os.path.join(SAVE_DIR, 'analysis_results.json')
@@ -79,11 +77,11 @@ class PredictionRequest(BaseModel):
 # ── Endpoints ──────────────────────────────────────────────────────────────
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "model_loaded": interpreter is not None}
+    return {"status": "ok", "model_loaded": ort_session is not None}
 
 @app.post("/api/predict")
 def predict(req: PredictionRequest):
-    if interpreter is None or artefacts is None:
+    if ort_session is None or artefacts is None:
         return {"error": "Model not loaded"}
 
     # Prepare data for prediction
@@ -105,10 +103,10 @@ def predict(req: PredictionRequest):
     # Combine
     X_input = np.hstack([scaled_nums, encoded_cats])
 
-    # Predict speed using TFLite
-    interpreter.set_tensor(input_details[0]['index'], X_input.astype(np.float32))
-    interpreter.invoke()
-    pred_speed = interpreter.get_tensor(output_details[0]['index'])[0][0]
+    # Predict speed using ONNX
+    ort_inputs = {input_name: X_input.astype(np.float32)}
+    ort_outs = ort_session.run(None, ort_inputs)
+    pred_speed = ort_outs[0][0][0]
     pred_speed = max(0, float(pred_speed))
 
     # Derive congestion level
