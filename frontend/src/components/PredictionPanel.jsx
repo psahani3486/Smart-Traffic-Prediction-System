@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Send, Gauge, MapPin, Clock, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Send, Gauge, MapPin, Clock, Zap, Navigation } from 'lucide-react';
 import axios from 'axios';
 
 const API = import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000';
@@ -11,20 +11,73 @@ const WEATHER = ["Clear", "Rain", "Fog", "Heatwave"];
 const DENSITY = ["Low", "Medium", "High", "Very High"];
 const ROAD_TYPE = ["Highway", "Main Road", "Inner Road"];
 
+// Delhi traffic zone coordinates for distance calculation
+const AREA_COORDINATES = {
+  "AIIMS": { lat: 28.5677, lng: 77.1988 },
+  "Chandni Chowk": { lat: 28.6505, lng: 77.2303 },
+  "Civil Lines": { lat: 28.6368, lng: 77.2256 },
+  "Connaught Place": { lat: 28.6329, lng: 77.1877 },
+  "Dwarka": { lat: 28.5921, lng: 77.0468 },
+  "Greater Kailash": { lat: 28.5244, lng: 77.2010 },
+  "Hauz Khas": { lat: 28.5492, lng: 77.1971 },
+  "IGI Airport": { lat: 28.5562, lng: 77.1197 },
+  "Janakpuri": { lat: 28.5143, lng: 77.1178 },
+  "Kalkaji": { lat: 28.5206, lng: 77.2599 },
+  "Karol Bagh": { lat: 28.6447, lng: 77.1973 },
+  "Lajpat Nagar": { lat: 28.5585, lng: 77.2242 },
+  "Mayur Vihar": { lat: 28.5832, lng: 77.2627 },
+  "Model Town": { lat: 28.7041, lng: 77.2296 },
+  "Nehru Place": { lat: 28.5524, lng: 77.2561 },
+  "Noida Sector 18": { lat: 28.5355, lng: 77.3680 },
+  "Okhla": { lat: 28.5244, lng: 77.2599 },
+  "Pitampura": { lat: 28.7447, lng: 77.1012 },
+  "Preet Vihar": { lat: 28.6180, lng: 77.2890 },
+  "Punjabi Bagh": { lat: 28.6789, lng: 77.1185 },
+  "Rajouri Garden": { lat: 28.6825, lng: 77.0838 },
+  "Rohini": { lat: 28.7695, lng: 77.0538 },
+  "Saket": { lat: 28.5244, lng: 77.1971 },
+  "Shahdara": { lat: 28.6506, lng: 77.2879 },
+  "Vasant Kunj": { lat: 28.5244, lng: 77.1756 }
+};
+
+// Calculate distance between two coordinates using Haversine formula
+const calculateDistance = (startArea, endArea) => {
+  const coord1 = AREA_COORDINATES[startArea];
+  const coord2 = AREA_COORDINATES[endArea];
+  
+  if (!coord1 || !coord2) return 0;
+  
+  const R = 6371; // Earth's radius in km
+  const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
+  const dLng = (coord2.lng - coord1.lng) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(coord1.lat * Math.PI / 180) * Math.cos(coord2.lat * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round((R * c) * 10) / 10; // Round to 1 decimal place
+};
+
 export default function PredictionPanel() {
   const [form, setForm] = useState({
     start_area: 'Connaught Place',
     end_area: 'IGI Airport',
-    distance_km: 15.5,
     time_of_day: 'Morning Peak',
     day_of_week: 'Weekday',
     weather_condition: 'Clear',
     traffic_density_level: 'Medium',
     road_type: 'Main Road'
   });
+  
+  const [distance, setDistance] = useState(0);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
+
+  // Auto-calculate distance when areas change
+  useEffect(() => {
+    const newDistance = calculateDistance(form.start_area, form.end_area);
+    setDistance(newDistance);
+  }, [form.start_area, form.end_area]);
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -33,18 +86,26 @@ export default function PredictionPanel() {
   const handlePredict = async () => {
     setLoading(true);
     try {
-      const res = await axios.post(`${API}/api/predict`, form);
-      setResult(res.data);
+      const predictionData = {
+        ...form,
+        distance_km: distance
+      };
+      const res = await axios.post(`${API}/api/predict`, predictionData);
+      setResult({
+        ...res.data,
+        distance_km: distance
+      });
       setHistory(prev => [{
         from: form.start_area,
         to: form.end_area,
+        distance: distance,
         speed: res.data.predicted_speed,
         level: res.data.congestion_level,
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       }, ...prev].slice(0, 5));
     } catch (e) {
       console.error(e);
-      setResult({ predicted_speed: 24.5, congestion_level: 'Moderate' });
+      setResult({ predicted_speed: 24.5, congestion_level: 'Moderate', distance_km: distance });
     }
     setLoading(false);
   };
@@ -70,14 +131,14 @@ export default function PredictionPanel() {
   };
 
   const getSpeedColor = (speed) => {
-    if (speed >= 40) return '#10b981';
-    if (speed >= 25) return '#f59e0b';
-    if (speed >= 15) return '#f97316';
-    return '#ef4444';
+    if (speed >= 40) return '#22c55e';      // Green - Free flow
+    if (speed >= 25) return '#eab308';      // Yellow - Moderate
+    if (speed >= 15) return '#f97316';      // Orange - Heavy
+    return '#ef4444';                       // Red - Severe
   };
 
-  const estTime = result && form.distance_km
-    ? Math.round((form.distance_km / result.predicted_speed) * 60)
+  const estTime = result && distance
+    ? Math.round((distance / result.predicted_speed) * 60)
     : null;
 
   return (
@@ -107,12 +168,14 @@ export default function PredictionPanel() {
               </div>
             </div>
 
+            {/* Distance display instead of input */}
             <div className="form-row">
-              <div className="form-group">
-                <label>Distance (km)</label>
-                <input type="number" value={form.distance_km}
-                  onChange={e => handleChange('distance_km', +e.target.value)}
-                  min={0.1} step={0.5} />
+              <div className="form-group distance-display">
+                <label>Calculated Distance</label>
+                <div className="distance-value">
+                  <Navigation size={18} />
+                  <span>{distance} km</span>
+                </div>
               </div>
               <div className="form-group">
                 <label>Road Type</label>
@@ -208,7 +271,7 @@ export default function PredictionPanel() {
                     fontSize: '0.85rem', color: 'var(--accent-cyan)'
                   }}>
                     <Clock size={14} />
-                    <span>Est. travel: <strong>{estTime} min</strong> for {form.distance_km} km</span>
+                    <span>Est. travel: <strong>{estTime} min</strong> for {distance} km</span>
                   </div>
                 )}
 
