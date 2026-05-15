@@ -33,56 +33,40 @@ An end-to-end, production-grade Smart Traffic Prediction System powered by Deep 
 ---
 
 ## Screenshots
+### Dashboard Overview
 
-### Dashboard Overview & Analytics
+![Dashboard Overview](screenshots/01-dashboard-overview.png)
+*Hero overview: key stats (avg speed, top origin, data points, peak speed, coverage zones)*
 
-![Dashboard Overview](screenshots/01-overview.png)
-_Key statistics: Average Speed 28.1 km/h, Top Origin Preet Vihar, 4,000 Data Points, 93.3 km/h Peak Speed, 25 Delhi Zones_
+### Traffic Speed Prediction
 
-### Prediction Form with Red-Yellow Gradient Theme
-
-![Prediction Form](screenshots/02-prediction-form.png)
-_Interactive form with area selectors, auto-calculated green distance display, dropdowns for road type, time, weather, density_
-
-### Predict Button with Red-Yellow Gradient
-
-![Predict Button](screenshots/03-predict-button.png)
-_Bold Red-to-Yellow gradient button for traffic speed predictions following traffic signal color scheme_
+![Traffic Speed Prediction](screenshots/02-traffic-speed-prediction.png)
+*Interactive prediction panel with auto-calculated distance and inputs for route, road type, time and weather.*
 
 ### Speed & Congestion Patterns
 
-![Traffic Patterns](screenshots/04-traffic-patterns.png)
-_Speed analysis across times: Afternoon, Evening Peak, Morning Peak, Night with color-coded traffic indicators_
+![Speed & Congestion Patterns](screenshots/03-speed-congestion-patterns.png)
+*Average speeds by time/road type and congestion indicators.*
 
 ### Environmental & Infrastructure Impact
 
-![Environmental Impact](screenshots/05-environmental-impact.png)
-_Weather impact (Fog, Rain, Heatwave, Clear), Road Type analysis, Density Distribution visualization_
+![Environmental Impact](screenshots/04-environmental-impact.png)
+*Weather and road-type effects on speeds; density distribution visualization.*
 
-### Area-Wise Analysis & Speed Distribution
+### Speed Distribution & Popular Routes
 
-![Area Analysis](screenshots/06-area-analysis.png)
-_25 Delhi zones ranked by average speed - Green (fast): Rohini, Pitampura, Janakpuri; Orange (slow): congested areas_
+![Speed Distribution & Popular Routes](screenshots/05-speed-distribution-popular-routes.png)
+*Speed histogram and top routes combined for quick insights.*
 
-### Density Distribution Donut Chart
+### Delhi Area-Wise Speed Analysis
 
-![Density Distribution](screenshots/07-density-distribution.png)
-_Traffic status: Low (Green, 46.9 km/h), Medium (Orange, 36.5 km/h), High (Red, 24.2 km/h), Very High (Pink, 12.4 km/h)_
+![Delhi Area-Wise Speed Analysis](screenshots/06-delhi-area-wise-speed-analysis.png)
+*Ranked average speeds across 25 Delhi zones.*
 
-### Speed Distribution Histogram
+### Model Performance
 
-![Speed Distribution](screenshots/08-speed-distribution.png)
-_Frequency distribution of speeds 0-80+ km/h using Red, Orange, Yellow, Green, Cyan bars_
-
-### Top 10 Busiest Routes
-
-![Popular Routes](screenshots/09-popular-routes.png)
-_Ranked routes: Greater Kailash→Chandni Chowk (15 trips), Preet Vihar→Lajpat Nagar (13 trips)_
-
-### Model Performance & Best Badge
-
-![Model Performance](screenshots/10-model-performance.png)
-_DNN comparison: DNN Basic BEST (R²=0.9169, MAPE=16.04%), tested 4 architectures_
+![Model Performance](screenshots/07-model-performance.png)
+*DNN comparison table and "BEST" badge for the selected model (metrics: R², RMSE, MAPE).*
 
 ---
 
