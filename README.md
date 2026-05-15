@@ -33,40 +33,41 @@ An end-to-end, production-grade Smart Traffic Prediction System powered by Deep 
 ---
 
 ## Screenshots
+
 ### Dashboard Overview
 
 ![Dashboard Overview](screenshots/01-dashboard-overview.png)
-*Hero overview: key stats (avg speed, top origin, data points, peak speed, coverage zones)*
+_Hero overview: key stats (avg speed, top origin, data points, peak speed, coverage zones)_
 
 ### Traffic Speed Prediction
 
 ![Traffic Speed Prediction](screenshots/02-traffic-speed-prediction.png)
-*Interactive prediction panel with auto-calculated distance and inputs for route, road type, time and weather.*
+_Interactive prediction panel with auto-calculated distance and inputs for route, road type, time and weather._
 
 ### Speed & Congestion Patterns
 
 ![Speed & Congestion Patterns](screenshots/03-speed-congestion-patterns.png)
-*Average speeds by time/road type and congestion indicators.*
+_Average speeds by time/road type and congestion indicators._
 
 ### Environmental & Infrastructure Impact
 
 ![Environmental Impact](screenshots/04-environmental-impact.png)
-*Weather and road-type effects on speeds; density distribution visualization.*
+_Weather and road-type effects on speeds; density distribution visualization._
 
 ### Speed Distribution & Popular Routes
 
 ![Speed Distribution & Popular Routes](screenshots/05-speed-distribution-popular-routes.png)
-*Speed histogram and top routes combined for quick insights.*
+_Speed histogram and top routes combined for quick insights._
 
 ### Delhi Area-Wise Speed Analysis
 
 ![Delhi Area-Wise Speed Analysis](screenshots/06-delhi-area-wise-speed-analysis.png)
-*Ranked average speeds across 25 Delhi zones.*
+_Ranked average speeds across 25 Delhi zones._
 
 ### Model Performance
 
 ![Model Performance](screenshots/07-model-performance.png)
-*DNN comparison table and "BEST" badge for the selected model (metrics: R², RMSE, MAPE).*
+_DNN comparison table and "BEST" badge for the selected model (metrics: R², RMSE, MAPE)._
 
 ---
 
