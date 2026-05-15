@@ -1,50 +1,38 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   Smart Traffic Prediction System — Design System
-   Premium dark-mode glassmorphism theme
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* ── CSS Variables ─────────────────────────────────────────────────────── */
+/* Colors and sizing */
 :root {
-  --bg-primary:     #050816;
-  --bg-secondary:   #0a0e27;
-  --bg-card:        rgba(15, 23, 60, 0.6);
-  --bg-card-hover:  rgba(20, 30, 75, 0.7);
-  --bg-glass:       rgba(255, 255, 255, 0.03);
-  --border-glass:   rgba(255, 255, 255, 0.08);
-  --border-glow:    rgba(0, 212, 255, 0.15);
+  /* Dark theme backgrounds */
+  --bg-primary: #050816;
+  --bg-secondary: #0a0e27;
+  --bg-card: rgba(15, 23, 60, 0.6);
+  --bg-card-hover: rgba(20, 30, 75, 0.7);
 
-  --text-primary:   #e8eaed;
+  /* Text */
+  --text-primary: #e8eaed;
   --text-secondary: #8b8fa3;
-  --text-muted:     #5a5f73;
+  --text-muted: #5a5f73;
 
-  --accent-cyan:    #00d4ff;
-  --accent-blue:    #3366ff;
-  --accent-purple:  #8b5cf6;
-  --accent-green:   #10b981;
-  --accent-amber:   #f59e0b;
-  --accent-red:     #ef4444;
-  --accent-pink:    #ec4899;
+  /* Accents */
+  --accent-cyan: #00d4ff;
+  --accent-blue: #3366ff;
+  --accent-purple: #8b5cf6;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
 
-  --gradient-hero:  linear-gradient(135deg, #0a0e27 0%, #1a0a3e 50%, #0a0e27 100%);
-  --gradient-card:  linear-gradient(135deg, rgba(15,23,60,0.8) 0%, rgba(10,14,39,0.9) 100%);
-  --gradient-accent: linear-gradient(135deg, #00d4ff 0%, #8b5cf6 100%);
-  --gradient-warm:  linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-  --gradient-green: linear-gradient(135deg, #10b981 0%, #3366ff 100%);
+  /* Borders and effects */
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(0, 212, 255, 0.15);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
 
-  --shadow-lg:      0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  --shadow-glow:    0 0 30px rgba(0, 212, 255, 0.1);
-  --shadow-card:    0 4px 24px rgba(0, 0, 0, 0.3);
+  /* Spacing */
+  --radius: 12px;
+  --radius-lg: 16px;
 
-  --radius-sm:      8px;
-  --radius-md:      12px;
-  --radius-lg:      16px;
-  --radius-xl:      24px;
-  --radius-full:    9999px;
-
-  --font-family:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* ── Reset ─────────────────────────────────────────────────────────────── */
+/* Reset defaults */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -66,7 +54,7 @@ body {
   min-height: 100vh;
 }
 
-/* ── Animated background ───────────────────────────────────────────────── */
+/* Animated background gradient */
 body::before {
   content: '';
   position: fixed;
@@ -84,22 +72,22 @@ body::before {
   z-index: 1;
 }
 
-/* ── Scrollbar ─────────────────────────────────────────────────────────── */
+/* Customize scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb {
   background: rgba(0,212,255,0.3);
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
 }
 
-/* ── Navbar ────────────────────────────────────────────────────────────── */
+/* Navbar styles */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(20px) saturate(180%);
   background: rgba(5, 8, 22, 0.8);
-  border-bottom: 1px solid var(--border-glass);
+  border-bottom: 1px solid var(--border-light);
   padding: 0 2rem;
   height: 64px;
   display: flex;
@@ -113,7 +101,7 @@ body::before {
   gap: 12px;
   font-weight: 700;
   font-size: 1.2rem;
-  background: var(--gradient-accent);
+  background: linear-gradient(135deg, #00d4ff 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -145,7 +133,7 @@ body::before {
   50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(16,185,129,0); }
 }
 
-/* ── Main Layout ───────────────────────────────────────────────────────── */
+/* Layout structure */
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
@@ -179,10 +167,10 @@ body::before {
   margin-bottom: 1rem;
 }
 
-/* ── Glass Card ────────────────────────────────────────────────────────── */
+/* Card styles */
 .glass-card {
-  background: var(--gradient-card);
-  border: 1px solid var(--border-glass);
+  background: linear-gradient(135deg, rgba(15,23,60,0.8) 0%, rgba(10,14,39,0.9) 100%);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   backdrop-filter: blur(12px);
@@ -192,16 +180,16 @@ body::before {
 
 .glass-card:hover {
   border-color: var(--border-glow);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
-/* ── Hero Section ──────────────────────────────────────────────────────── */
+/* Hero section */
 .hero-section {
-  background: var(--gradient-hero);
-  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #0a0e27 0%, #1a0a3e 50%, #0a0e27 100%);
+  border-radius: var(--radius-lg);
   padding: 2.5rem;
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--border-light);
   position: relative;
   overflow: hidden;
 }
@@ -230,7 +218,7 @@ body::before {
 }
 
 .hero-title span {
-  background: var(--gradient-accent);
+  background: linear-gradient(135deg, #00d4ff 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -243,7 +231,7 @@ body::before {
   margin-bottom: 1.5rem;
 }
 
-/* ── Stats Grid ────────────────────────────────────────────────────────── */
+/* Stats cards */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -251,9 +239,9 @@ body::before {
 }
 
 .stat-card {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
   padding: 1.2rem;
   display: flex;
   flex-direction: column;
@@ -269,14 +257,12 @@ body::before {
   top: 0; left: 0;
   width: 100%;
   height: 3px;
-  border-radius: var(--radius-full);
 }
 
 .stat-card.cyan::before   { background: var(--accent-cyan); }
 .stat-card.purple::before { background: var(--accent-purple); }
 .stat-card.green::before  { background: var(--accent-green); }
 .stat-card.amber::before  { background: var(--accent-amber); }
-.stat-card.pink::before   { background: var(--accent-pink); }
 .stat-card.blue::before   { background: var(--accent-blue); }
 .stat-card.red::before    { background: var(--accent-red); }
 
@@ -303,7 +289,6 @@ body::before {
 .stat-card.purple .stat-value { color: var(--accent-purple); }
 .stat-card.green .stat-value  { color: var(--accent-green); }
 .stat-card.amber .stat-value  { color: var(--accent-amber); }
-.stat-card.pink .stat-value   { color: var(--accent-pink); }
 .stat-card.blue .stat-value   { color: var(--accent-blue); }
 .stat-card.red .stat-value    { color: var(--accent-red); }
 
@@ -312,7 +297,7 @@ body::before {
   color: var(--text-muted);
 }
 
-/* ── Grid Layouts ──────────────────────────────────────────────────────── */
+/* Grid layouts */
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -325,7 +310,6 @@ body::before {
   gap: 1.5rem;
 }
 
-/* ── Chart container ───────────────────────────────────────────────────── */
 .chart-container {
   width: 100%;
   height: 350px;
@@ -336,7 +320,7 @@ body::before {
   height: 280px;
 }
 
-/* ── Prediction Panel ──────────────────────────────────────────────────── */
+/* Prediction form */
 .prediction-panel {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -372,8 +356,8 @@ body::before {
 .form-group select,
 .form-group input {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
   padding: 0.65rem 0.8rem;
   color: var(--text-primary);
   font-family: var(--font-family);
@@ -394,10 +378,10 @@ body::before {
 }
 
 .predict-btn {
-  background: var(--gradient-accent);
+  background: linear-gradient(135deg, #00d4ff 0%, #8b5cf6 100%);
   color: #fff;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 0.85rem 1.5rem;
   font-family: var(--font-family);
   font-size: 0.95rem;
@@ -420,7 +404,7 @@ body::before {
   transform: translateY(0);
 }
 
-/* ── Prediction Result ─────────────────────────────────────────────────── */
+/* Prediction results and gauge */
 .prediction-result {
   display: flex;
   flex-direction: column;
@@ -477,7 +461,7 @@ body::before {
 
 .congestion-badge {
   padding: 0.5rem 1.2rem;
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -489,19 +473,22 @@ body::before {
   color: var(--accent-green);
   border: 1px solid rgba(16,185,129,0.3);
 }
+
 .congestion-badge.moderate {
   background: rgba(245,158,11,0.15);
   color: var(--accent-amber);
   border: 1px solid rgba(245,158,11,0.3);
 }
+
 .congestion-badge.high {
   background: rgba(239,68,68,0.15);
   color: var(--accent-red);
   border: 1px solid rgba(239,68,68,0.3);
 }
+
 .congestion-badge.critical {
   background: rgba(236,72,153,0.15);
-  color: var(--accent-pink);
+  color: var(--accent-red);
   border: 1px solid rgba(236,72,153,0.3);
   animation: pulse-badge 1.5s ease-in-out infinite;
 }
@@ -511,7 +498,7 @@ body::before {
   50% { box-shadow: 0 0 0 8px rgba(236,72,153,0); }
 }
 
-/* ── Heatmap ───────────────────────────────────────────────────────────── */
+/* Heatmap grid */
 .heatmap-grid {
   display: grid;
   grid-template-columns: 50px repeat(24, 1fr);
@@ -545,7 +532,7 @@ body::before {
   box-shadow: 0 0 12px rgba(0,212,255,0.3);
 }
 
-/* ── Model Performance Table ───────────────────────────────────────────── */
+/* Model performance table */
 .model-table {
   width: 100%;
   border-collapse: separate;
@@ -561,7 +548,7 @@ body::before {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border-glass);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .model-table td {
@@ -575,24 +562,24 @@ body::before {
 }
 
 .model-table .best-badge {
-  background: var(--gradient-accent);
+  background: linear-gradient(135deg, #00d4ff 0%, #8b5cf6 100%);
   color: #fff;
   padding: 2px 8px;
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   font-size: 0.7rem;
   font-weight: 600;
   margin-left: 8px;
 }
 
-/* ── Route Recommendation ──────────────────────────────────────────────── */
+/* Route cards */
 .route-card {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
   transition: all 0.3s ease;
 }
 
@@ -604,7 +591,7 @@ body::before {
 .route-icon {
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -647,13 +634,13 @@ body::before {
   text-align: right;
 }
 
-/* ── Alert Banner ──────────────────────────────────────────────────────── */
+/* Alert banners */
 .alert-banner {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 1rem 1.5rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   font-size: 0.9rem;
   animation: slide-in 0.5s ease;
 }
@@ -681,7 +668,7 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Loading Skeleton ──────────────────────────────────────────────────── */
+/* Loading skeleton */
 .skeleton {
   background: linear-gradient(90deg,
     rgba(255,255,255,0.03) 25%,
@@ -690,7 +677,7 @@ body::before {
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
 }
 
 @keyframes skeleton-shimmer {
@@ -698,7 +685,7 @@ body::before {
   100% { background-position: -200% 0; }
 }
 
-/* ── Responsive ────────────────────────────────────────────────────────── */
+/* Mobile responsiveness */
 @media (max-width: 1024px) {
   .grid-2 { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr 1fr; }
